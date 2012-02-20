@@ -1,0 +1,121 @@
+<?php
+/**
+ * @file
+ * Module file for deposit_block.
+ */
+
+/**
+ * Implements hook_block_info().
+ *
+ * This hook declares what blocks are provided by the module.
+ */
+function deposit_block_block_info() {
+  // This hook returns an array, each component of which is an array of block
+  // information. The array keys are the 'delta' values used in other block
+  // hooks.
+
+  $blocks['add_deposit'] = array(
+    // info: The name of the block.
+    'info' => t('Block of links to deposit content'),
+    // Block caching options (per role, per user, etc.)
+    'cache' => DRUPAL_CACHE_PER_ROLE, // default
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * This hook generates the contents of the blocks themselves.
+ */
+function deposit_block_block_view($delta = '') {
+  //The $delta parameter tells us which block is being requested.
+  switch ($delta) {
+    case 'add_deposit':
+      $block['subject'] = t('Deposit');
+      $block['content'] = deposit_block_contents($delta);
+      break;
+  }
+  return $block;
+}
+
+/**
+ * A module-defined block content function.
+ */
+function deposit_block_contents($delta) {
+  switch ($delta) {
+    case 'add_deposit':
+			$content = array('#markup' => 'hello');
+      return $content;
+  }
+}
+
+/******** Unneccessary for this module? *********/
+
+/**
+ * Implements hook_menu().
+ *
+ * Provides a default page to explain what this module does.
+ */
+function deposit_block_menu() {
+  $items['examples/deposit_block'] = array(
+    'page callback' => 'deposit_block_page',
+    'access callback' => TRUE,
+    'title' => 'Deposit',
+  );
+  return $items;
+}
+
+/**
+ * Simple page function to explain what the block example is about.
+ */
+function deposit_block_page() {
+  $page = array(
+    '#type' => 'markup',
+    '#markup' => t('The Deposit Block displays a list of deposit content types that can be created by the user. It is dependent on the content_type_groups module to differentiate groups of content types'),
+  );
+  return $page;
+}
+
+/**
+ * Implements hook_block_configure().
+ *
+ * This hook declares configuration options for blocks provided by this module.
+ */
+function deposit_block_block_configure($delta = '') {
+  // The $delta parameter tells us which block is being configured.
+  // In this example, we'll allow the administrator to customize
+  // the text of the 'configurable text string' block defined in this module.
+
+  $form = array();
+  if ($delta == 'example_configurable_text') {
+    // All we need to provide is the specific configuration options for our
+    // block. Drupal will take care of the standard block configuration options
+    // (block title, page visibility, etc.) and the save button.
+    $form['deposit_block_string'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Block contents'),
+      '#size' => 60,
+      '#description' => t('This text will appear in the example block.'),
+      '#default_value' => variable_get('deposit_block_string',  t('Some example content.')),
+    );
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ *
+ * This hook declares how the configured options for a block
+ * provided by this module are saved.
+ */
+function deposit_block_block_save($delta = '', $edit = array()) {
+  // We need to save settings from the configuration form.
+  // We need to check $delta to make sure we are saving the right block.
+  if ($delta == 'example_configurable_text') {
+    // Have Drupal save the string to the database.
+    variable_set('deposit_block_string', $edit['deposit_block_string']);
+  }
+  return;
+}

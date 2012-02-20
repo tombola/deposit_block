@@ -1,0 +1,7 @@
+name = Deposit Block
+description = Display block allowing researcher to add content of deposit types
+package = Repository
+core = 7.x
+dependencies[] = block
+
+
